@@ -10,3 +10,5 @@ Finally, it comes with a pattern searching.
 The class build an internal dataframe with usefull informations that can be retrieved and easily analyzed.
 
 The code is fully commented and comes with some samples to see how it works :)
+
+It uses 2 packages : NumPy and Pandas.
