@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Fasta file tools for python
+Fasta file tools for Python
 
-Created on Fri Mar 18 08:26:12 2022
-
-@author: Alex-932
+@author: Alex-merge
 @version: 1.0
 """
 
@@ -73,9 +71,24 @@ class PyFastaTools() :
     def is_fasta(path):
         splitted_path = re.split(r'\\',path)
         extension = re.split(r'\.',splitted_path[-1])
-        if extension[-1] in ["fq","fastq","fasta","fa"] :
+        if extension[-1] in ["fq","fastq","fasta","fa", "data"] :
             return True
         return False
+    
+    def open_file(path):
+        fastafile = open(path)
+        r_lines = PyFastaTools.cleanup(fastafile.readlines()) 
+        
+        c_lines = []
+        for l in r_lines:
+            if l[0] in ["@", "+", ">"]:
+                c_lines.append(l)
+            elif c_lines[-1][0] not in ["@", "+", ">"]:
+                c_lines[-1] += l
+            else:
+                c_lines.append(l)
+        
+        return c_lines
     
     def checker(string, allowed_char):
         """
@@ -140,12 +153,11 @@ class PyFastaTools() :
             Dataframe containing the informations of the file.
     
         """
-        fastafile = open(path)
-        line_list = PyFastaTools.cleanup(fastafile.readlines()) 
+        line_list = PyFastaTools.open_file(path)
         #list that contains all the lines of the given file.
         
         #We're going to create a list of all "paragraphs"
-        #We first need to recognize the index of the sequence line
+        #We first need to recognize the index of the sequences
         seq_index = [k for k in range(len(line_list)) \
                         if PyFastaTools.checker(line_list[k],\
                                                 ['A','T','G','C','N'])]
@@ -165,8 +177,8 @@ class PyFastaTools() :
                 par.pop(2)
                 par_list.append(par)
             else :
-                #Else, it's a Fasta file so no line deleting but we add a 
-                #quality score of np.nan
+                #Else, it's a Fasta file so no line deleted but we add a 
+                #quality score of None
                 par.append(None)
                 par_list.append(par)
         
