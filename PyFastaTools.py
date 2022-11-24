@@ -131,6 +131,16 @@ class PyFastaTools() :
     
         """
         return [re.split(element, k)[position] for k in file_list]
+    
+    def well_categorizing(df):
+        sequences = df["Header"]
+        well = []
+        for k in df["Header"]:
+            try :
+                well.append(k.split("/")[1])
+            except :
+                well.append(None)
+        return well
                     
     def df_creator(path):
         """
@@ -188,6 +198,8 @@ class PyFastaTools() :
                           index=[k for k in range(1,len(par_list)+1)],\
                               columns=df_labels)
         
+        df["Well"] = PyFastaTools.well_categorizing(df)
+            
         #Then we add some informations concerning the reads to the dataframe 
         seq_series = df["Sequence"]
         
@@ -216,8 +228,12 @@ class PyFastaTools() :
         df["N_count"] = [k.count("N") for k in seq_series]
         df["GC_proportion"] = [(k.count("G")+k.count("C"))/len(k) \
                                 for k in seq_series]
+        
             
         return df
+    
+    def add_reversecomp_seq(self):
+        sequences = self.df["Sequence"]
     
     def fasta_summary(self):
         """
